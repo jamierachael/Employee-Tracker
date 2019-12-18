@@ -76,33 +76,32 @@ function runSearch() {
                     ]);
                     break;
                 // Start new case
-                //     case "View all employees by department":
-                //         inquirer
-                //             .prompt({
-                //                 name: "department",
-                //                 type: "list",
-                //                 message: "Which department?",
-                //                 choices: [
-                //                     "Sales",
-                //                     "Finance",
-                //                     "Engineering",
-                //                     "Legal"
-                //                 ]
-                //             })
-                // }).then(answersId.department) => {
-                //     // Run Query - filter by id - display table
+                case "View all employees by department":
+                    inquirer
+                        .prompt({
+                            name: "department",
+                            type: "list",
+                            message: "Which department?",
+                            choices: [
+                                "Sales",
+                                "Finance",
+                                "Engineering",
+                                "Legal"
+                            ]
+                        }).then(answersId => {
+                            //     // Run Query - filter by id - display table
 
-                // Start department ID
-                // console.table([
-                //     {
-                //         table: 'role',
-                //         id: 'foo',
-                //         title: 10,
-                //         salary: 10,
-                //         department_id: 10
-                //     }
-                // ]);
-                //     // })
+                            // Start department ID
+                            console.table([
+                                {
+                                    table: 'role',
+                                    id: 'foo',
+                                    title: 10,
+                                    salary: 10,
+                                    department_id: 10
+                                }
+                            ]);
+                        })
 
                 // break;
                 // Start new case
