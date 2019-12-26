@@ -2,6 +2,7 @@ const inquirer = require("inquirer");
 const fs = require("fs");
 const cTable = require('console.table');
 var mysql = require("mysql");
+const util = require("util");
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -26,17 +27,8 @@ connection.connect((err) => {
     // );
 })
 
-// console.table([
-//     {
-//       name: 'foo',
-//       age: 10
-//     }, {
-//       name: 'bar',
-//       age: 20
-//     }
-//   ]);
+connection.query = util.promisify(connection.query);
 
-// Example: 
 function runSearch() {
     inquirer
         .prompt({
@@ -57,40 +49,16 @@ function runSearch() {
 
             switch (answers.action) {
                 case "View all employees":
-                    // start copy paste 
-                    // var query = "SELECT position,song,artist,year FROM top5000 WHERE position BETWEEN ? AND ?";
-                    // connection.query(query, [answer.start, answer.end], function(err, res) {
-                    //   if (err) throw err;
-                    //   for (var i = 0; i < res.length; i++) {
-                    // Instead of console.log use console.table below: 
 
-                    console.table([
-                        {
-                            table: 'employee',
-                            id: 'foo',
-                            first_name: 10,
-                            last_name: 10,
-                            role_id: 10,
-                            manager_id: 10,
-                        }
-                    ]);
-                    inquirer
-                        .prompt(
+                    // Views all employess
+                    byEmployees();
+                    next();
 
-                            {
-                                name: "next",
-                                type: "list",
-                                message: "What would you like to do next?",
-                                choices: [
-                                    "Add employee",
-                                    "Remove employee",
-                                    "Update employee role",
-                                    "Update employee manager"
-                                ]
-                            })
                     break;
                 // Start new case
                 case "View all employees by department":
+                    byDepartment();
+
                     inquirer
                         .prompt({
                             name: "department",
@@ -102,35 +70,22 @@ function runSearch() {
                                 "Engineering",
                                 "Legal"
                             ]
-                        }).then(answersId => {
-                            //     // Run Query - filter by id - display table
+                        }).then(answersDept => {
 
                             // Start department ID
-                            console.table([
-                                {
-                                    table: 'role',
-                                    id: 'foo',
-                                    title: 10,
-                                    salary: 10,
-                                    department_id: 10
-                                }
-                            ]);
+                            byDepartment();
+                            next();
                         })
 
                     break;
                 // Start new case
                 case "View all employees by manager":
-                    console.table([
-                        {
-                            table: 'employee',
-                            id: 'foo',
-                            first_name: 10,
-                            last_name: 10,
-                            role_id: 10,
-                            manager_id: 10,
-                        }
-                    ]);
+                    byManager();
+                    next();
 
+
+                // start new case 
+                case "Update employee manager":
                     inquirer
                         .prompt({
                             name: "manager",
@@ -345,6 +300,85 @@ function runSearch() {
     // Add .them
 }
 
+function next() {
+    inquirer
+        .prompt(
+
+            {
+                name: "next",
+                type: "list",
+                message: "What would you like to do next?",
+                choices: [
+                    "Add employee",
+                    "Remove employee",
+                    "Update employee role",
+                    "Update employee manager"
+                ]
+            })
+}
+
+function byEmployees() {
+
+    var results = connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, department.d_name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;",
+
+
+        function (error, results) {
+            if (error) throw error
+            console.table(results)
+        })
+
+};
+
+function byDepartment() {
+    var department = connection.query("SELECT employee.id, employee.first_name, employee.last_name, department.d_name FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department department on role.department_id = department.id WHERE department.id;",
+
+
+        function (error, department) {
+            if (error) throw error
+            console.table(department)
+        })
+};
+
+function byManager() {
+    var manager = connection.query("SELECT role.id, role.title, department.d_name AS department, role.salary FROM role LEFT JOIN department on role.department_id = department.id;",
+
+
+        function (error, manager) {
+            if (error) throw error
+            console.table(manager)
+        })
+}
+
+function updateEmployeeManager(employeeId, managerId) {
+    return this.connection.query(
+        "UPDATE employee SET manager_id = ? WHERE id = ?",
+        [managerId, employeeId]
+    );
+}
+
+// function PromptAllEmployeesbyDepartment() {
+
+//     connection.query('SELECT department.name FROM department;',
+
+//         function (error, results) {
+//             if (error) throw error
+//             let deptArray = []
+//             results.forEach((element) => {
+//                 deptArray.push(element.name)
+
+//             });
+//             return inquirer.prompt([
+//                 {
+//                     type: "list",
+//                     name: "alldepartments",
+//                     message: "which dept?",
+//                     choices: deptArray
+//                 },
+//             ]).then(function (value) {
+//                 allEmployeesbyDeptQuery(value)
+//             })
+//         })
+// }
 // Run schema, then create the seeds.sql 
 // .sql run in database after schema
 // npm start 
