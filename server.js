@@ -57,25 +57,10 @@ function runSearch() {
                     break;
                 // Start new case
                 case "View all employees by department":
+
                     byDepartment();
-
-                    inquirer
-                        .prompt({
-                            name: "department",
-                            type: "list",
-                            message: "Which department?",
-                            choices: [
-                                "Sales",
-                                "Finance",
-                                "Engineering",
-                                "Legal"
-                            ]
-                        }).then(answersDept => {
-
-                            // Start department ID
-                            byDepartment();
-                            next();
-                        })
+                    next();
+                    // })
 
                     break;
                 // Start new case
@@ -83,40 +68,32 @@ function runSearch() {
                     byManager();
                     next();
 
-
+                    break;
                 // start new case 
                 case "Update employee manager":
+
+                    // Does not run
+                    // updateEmployeeManager();
+
                     inquirer
-                        .prompt({
-                            name: "manager",
-                            type: "list",
-                            message: "Which employee's manager would you like to update?",
-                            choices: [
-                                "Person 1",
-                                "Person 2",
-                                "Person 3",
-                                "Person 4",
-                                "Person 5"
-                            ]
-                        }).then(answersSetManager => {
+                        .prompt([
+                            {
+                                name: "manager",
+                                type: "list",
+                                message: "Which employee's manager would you like to update?",
+                                choices: console.table(employee)
+                            },
+                            {
+                                name: "setmanager",
+                                type: "list",
+                                message: "Which employee do you want to set as manager for the selected employee?",
+                                choices: console.table(manager)
 
-                            inquirer
-                                .prompt({
-                                    name: "setmanager",
-                                    type: "list",
-                                    message: "Which employee do you want to set as manager for the selected employee?",
-                                    choices: [
-                                        "Person 1",
-                                        "Person 2",
-                                        "Person 3",
-                                        "Person 4",
-                                        "Person 5"
-                                    ]
-                                })
-                        })
+                            }
+                        ])
 
-                    //     // Run Query - filter by id - display table
-                    //     // })
+                    // Run Query - filter by id - display table
+                    // })
 
                     break;
                 // Start new case
@@ -150,26 +127,30 @@ function runSearch() {
                                 name: "department",
                                 type: "list",
                                 message: "What is the employee's role?",
-                                choices: [
-                                    "Sales",
-                                    "Finance",
-                                    "Engineering",
-                                    "Legal"
-                                ]
+                                choices:
+                                    [
+                                        "Sales",
+                                        "Finance",
+                                        "Engineering",
+                                        "Legal"
+                                    ]
                             },
                             {
                                 name: "manager",
-                                type: "list",
-                                message: "who is the employee's manager?",
-                                choices: [
-                                    "Person 1",
-                                    "Person 2",
-                                    "Person 3",
-                                    "Person 4",
-                                    "Person 5"
-                                ]
+                                type: "input",
+                                message: "who is the employee's manager?"
+                                // choices: [
+                                //     "Person 1",
+                                //     "Person 2",
+                                //     "Person 3",
+                                //     "Person 4",
+                                //     "Person 5"
+                                // ]
                             }
                         ])
+                    // MySQL syntax error
+                    // Does not run
+                    // addEmployee();
                     break;
 
                 case "Remove employee":
@@ -300,6 +281,7 @@ function runSearch() {
     // Add .them
 }
 
+// Works
 function next() {
     inquirer
         .prompt(
@@ -317,6 +299,7 @@ function next() {
             })
 }
 
+// Works
 function byEmployees() {
 
     var results = connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, department.d_name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;",
@@ -329,6 +312,7 @@ function byEmployees() {
 
 };
 
+// How to do department_id = ? - I get a syntax error
 function byDepartment() {
     var department = connection.query("SELECT employee.id, employee.first_name, employee.last_name, department.d_name FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department department on role.department_id = department.id WHERE department.id;",
 
@@ -339,8 +323,9 @@ function byDepartment() {
         })
 };
 
+// How to d0 manager_id = ? - I get a syntax error
 function byManager() {
-    var manager = connection.query("SELECT role.id, role.title, department.d_name AS department, role.salary FROM role LEFT JOIN department on role.department_id = department.id;",
+    var manager = connection.query("SELECT employee.id, employee.first_name, employee.last_name, department.d_name AS department, role.title FROM employee LEFT JOIN role on role.id = employee.role_id LEFT JOIN department ON department.id = role.department_id WHERE manager_id;",
 
 
         function (error, manager) {
@@ -349,36 +334,48 @@ function byManager() {
         })
 }
 
-function updateEmployeeManager(employeeId, managerId) {
-    return this.connection.query(
-        "UPDATE employee SET manager_id = ? WHERE id = ?",
-        [managerId, employeeId]
-    );
+// function updateByManager(managerId, employeeId) {
+//     // var byManager = connection.query("UPDATE employee SET manager_id = ? WHERE id = ?;",
+//     var byManager = connection.query(
+//         "UPDATE employee SET manager_id = ? WHERE id = ?",
+//         // [managerId, employeeId]
+//         function (error, manager) {
+//             if (error) throw error
+//             console.table(byManager)
+//         })
+
+//     // );
+// }
+
+// Will not run prompts here or in the above function
+function updateEmployeeManager() {
+    // inquirer
+    //     .prompt([
+    //         {
+    //             name: "manager",
+    //             type: "list",
+    //             message: "Which employee's manager would you like to update?",
+    //             choices: console.table(employee)
+    //         },
+
+    //         {
+    //             name: "setmanager",
+    //             type: "list",
+    //             message: "Which employee do you want to set as manager for the selected employee?",
+    //             choices: console.table(manager)
+    //             // })
+    //         }
+    //     ])
 }
 
-// function PromptAllEmployeesbyDepartment() {
+// Syntax error, how to define employee?
+function addEmployee(employee) {
+    var add = connection.query("INSERT INTO employee SET ?", employee);
 
-//     connection.query('SELECT department.name FROM department;',
 
-//         function (error, results) {
-//             if (error) throw error
-//             let deptArray = []
-//             results.forEach((element) => {
-//                 deptArray.push(element.name)
+}
 
-//             });
-//             return inquirer.prompt([
-//                 {
-//                     type: "list",
-//                     name: "alldepartments",
-//                     message: "which dept?",
-//                     choices: deptArray
-//                 },
-//             ]).then(function (value) {
-//                 allEmployeesbyDeptQuery(value)
-//             })
-//         })
-// }
-// Run schema, then create the seeds.sql 
-// .sql run in database after schema
-// npm start 
+
+// Add and remove employees will be the same
+// Update roles and Manager will be the same
+// Need to get manager_id = ? to work
