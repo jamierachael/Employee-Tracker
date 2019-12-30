@@ -1,3 +1,4 @@
+/* Seed file example provided by UNH */
 use employee_tracker;
 
 INSERT INTO department
@@ -23,11 +24,11 @@ VALUES
 INSERT INTO employee
     (first_name, last_name, role_id, manager_id)
 VALUES
-    ('John', 'Doe', 1, NULL),
-    ('Mike', 'Chan', 2, 1),
-    ('Ashley', 'Rodriguez', 3, NULL),
-    ('Kevin', 'Tupik', 4, 3),
-    ('Kunal', 'Singh', 5, NULL),
-    ('Malia', 'Brown', 6, 5),
-    ('Sarah', 'Lourd', 7, NULL),
-    ('Tom', 'Allen', 8, 7);
+    ('Ric', 'Ocasek', 1, NULL),
+    ('Janis', 'Joplin', 2, 1),
+    ('Stevie', 'Nicks', 3, NULL),
+    ('Ray', 'Manzarek', 4, 3),
+    ('Ray', 'Charles', 5, NULL),
+    ('Ann', 'Wilson', 6, 5),
+    ('Robert', 'Plant', 7, NULL),
+    ('Roger', 'Waters', 8, 7);
